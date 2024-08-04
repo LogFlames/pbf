@@ -1,9 +1,12 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { sql } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
 import {
+  AnyPgColumn,
   index,
+  integer,
+  numeric,
   pgTableCreator,
   serial,
   timestamp,
@@ -18,19 +21,142 @@ import {
  */
 export const createTable = pgTableCreator((name) => `pbf_${name}`);
 
-export const posts = createTable(
-  "post",
+export const accounts = createTable(
+  "account",
   {
     id: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }),
+    name: varchar("name", { length: 256 }).notNull(),
+    parentAccountId: integer("parent_account_id").references((): AnyPgColumn => accounts.id),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
       () => new Date()
     ),
-  },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
-  })
-);
+  });
+
+export const bankAccounts = createTable(
+  "bank_account",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 256 }).notNull(),
+    bank: varchar("bank", { length: 256 }).notNull(),
+    clearingNr: integer("clearing_nr").notNull(),
+    accountNr: integer("account_nr").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    )
+  });
+
+export const verifications = createTable(
+  "verification",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 256 }).notNull(),
+    description: varchar("description", { length: 256 }),
+    date: timestamp("date", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    )
+  });
+
+export const verificationAttachments = createTable(
+  "verification_attachment",
+  {
+    id: serial("id").primaryKey(),
+    verificationId: integer("verification_id").references(() => verifications.id).notNull(),
+    filePath: varchar("file_path", { length: 256 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    )
+  });
+
+export const operationalYears = createTable(
+  "operational_year",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 256 }).notNull(),
+    startDate: timestamp("start_date", { withTimezone: true }).notNull(),
+    endDate: timestamp("end_date", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    )
+  });
+
+export const operationalYearAccountInitials = createTable(
+  "operational_year_account_initial",
+  {
+    id: serial("id").primaryKey(),
+    accountId: integer("account_id").references(() => accounts.id).notNull(),
+    operationalYearId: integer("operational_year_id").references(() => operationalYears.id).notNull(),
+    initialValue: numeric("initial_value").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    )
+  });
+
+export const operationalYearBankAccountInitials = createTable(
+  "operational_year_bank_account_initial",
+  {
+    id: serial("id").primaryKey(),
+    bankAccountId: integer("bank_account_id").references(() => bankAccounts.id).notNull(),
+    operationalYearId: integer("operational_year_id").references(() => operationalYears.id).notNull(),
+    initialValue: numeric("initial_value").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    )
+  });
+
+export const transactions = createTable(
+  "transaction",
+  {
+    id: serial("id").primaryKey(),
+    operationalYearId: integer("operational_year_id").references(() => operationalYears.id).notNull(),
+    bankAccountId: integer("bank_account_id").references(() => bankAccounts.id).notNull(),
+    date: timestamp("date", { withTimezone: true }).notNull(),
+    amount: numeric("amount").notNull(),
+    saldo: numeric("saldo").notNull(),
+    text: varchar("text", { length: 256 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    )
+  });
+
+export const verificationRows = createTable(
+  "verification_row",
+  {
+    id: serial("id").primaryKey(),
+    verificationId: integer("verification_id").references(() => verifications.id).notNull(),
+    accountId: integer("account_id").references(() => accounts.id).notNull(),
+    operationalYearId: integer("operational_year_id").references(() => operationalYears.id).notNull(),
+    transactionId: integer("transaction_id").references(() => transactions.id),
+    debit: numeric("debit").default("0").notNull(),
+    credit: numeric("credit").default("0").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    )
+  });

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { db } from "~/server/db";
 
-export default async function HomePage() {
+export default async function DashboardPage() {
   return (
     <main className="">
       <div className="flex justify-center">
-        Welcome to PBF!
+        WIP
       </div>
     </main>
   );
 }
+
