@@ -1,10 +1,10 @@
 import "~/styles/globals.css";
 
-import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "PBF",
@@ -12,27 +12,31 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-function TopNav() {
+async function TopNav() {
+  const csrfToken = cookies().get('next-auth.csrf-token')?.value.split('|')[0];
   return (
     <nav className="flex w-full justify-between items-center p-4 text-xl border-b">
-      <Link href="/" prefetch={true} className="text-white">
+      <Link href="/">
         PBF
       </Link>
-      <Link href="/transactions" prefetch={true} className="text-white">
+      <Link href="/transactions">
         Transactions
       </Link>
-      <Link href="/verifications" prefetch={true} className="text-white">
+      <Link href="/verifications">
         Verifications
       </Link>
-      <Link href="/config" prefetch={true} className="text-white">
+      <Link href="/config">
         Config
       </Link>
-      <Link href="/dashboard" prefetch={true} className="text-white">
+      <Link href="/dashboard">
         Dashboard
       </Link>
-      <Link href="/api/auth/signout" className="text-white">
-        <FontAwesomeIcon icon={faSignOutAlt} className="w-6 h-6" />
-      </Link>
+      <form method="POST" action="/api/auth/signout">
+        <input type="hidden" name="csrfToken" value={csrfToken} />
+        <button type="submit">
+          <FontAwesomeIcon icon={faSignOutAlt} className="w-6 h-6" />
+        </button>
+      </form>
     </nav>
   );
 }

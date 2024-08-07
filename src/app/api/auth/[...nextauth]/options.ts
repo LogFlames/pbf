@@ -1,7 +1,10 @@
+import { eq } from "drizzle-orm";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { db } from "~/server/db";
+import { users } from "~/server/db/schema";
 
-export const options: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
         name: "Credentials",
@@ -16,17 +19,42 @@ export const options: NextAuthOptions = {
             },
         },
         async authorize(credentials, req) {
-            const user = { id: "42", name: "Elias", password: "elias" };
-
-            if (credentials?.username === user.name && credentials?.password === user.password) {
-                return user;
-            }
-
+          if (!credentials?.username || !credentials?.password) {
             return null;
-        },
+          }
+
+          let user = await db.query.users.findFirst({
+            where: eq(users.username, credentials.username),
+          });
+
+          if (user && credentials.username === user.username && credentials.password === user.password) {
+            return { id: user.id, username: user.username };
+          }
+
+          return null;
+      },
     }),
   ],
   session: {
     strategy: "jwt",
+  },
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.username = user.username;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+          username: token.username,
+        }
+      }
+    },
   },
 };
