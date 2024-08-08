@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "~/server/db";
 import * as schema from "~/server/db/schema";
 import { and, eq } from "drizzle-orm";
-import { newAccountParentIdWouldResultInCyclic } from "~/server/utils";
+import { getSessionAndBody, newAccountParentIdWouldResultInCyclic, patchParams } from "~/server/utils";
 
 export async function GET(req: NextRequest, { params }: { params: { accountId: string } }) {
     let session = await getServerSession(authOptions);
@@ -27,9 +27,9 @@ export async function GET(req: NextRequest, { params }: { params: { accountId: s
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { accountId: string } }) {
-    let session = await getServerSession(authOptions);
-    if (!session) {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    const { session, body, response } = await getSessionAndBody(req);
+    if (response) {
+        return response;
     }
 
     const accountId = parseInt(params.accountId);
@@ -44,24 +44,16 @@ export async function PATCH(req: NextRequest, { params }: { params: { accountId:
     }
     const account = accounts[0];
 
-    const { name, parentAccountId } = await req.json();
-    let newName = account.name;
-    let newParentAccountId = account.parentAccountId;
+    const { values, response: patchParamsResponse } = patchParams(body, [
+        { name: "name", type: "string", defaultValue: account.name, allowNull: false },
+        { name: "parentAccountId", type: "number", defaultValue: account.parentAccountId, allowNull: true },
+    ]);
 
-    if (name !== undefined) {
-        if (typeof name !== "string" && name !== null) {
-            return NextResponse.json({ message: "Invalid name" }, { status: 400 });
-        }
-        newName = name;
+    if (patchParamsResponse) {
+        return patchParamsResponse;
     }
 
-    if (parentAccountId !== undefined) {
-        if (typeof parentAccountId !== "number" && parentAccountId !== null) {
-            return NextResponse.json({ message: "Invalid parentAccountId" }, { status: 400 });
-        }
-        newParentAccountId = parentAccountId;
-    }
-
+    const { newName, newParentAccountId } = values;
 
     if (newParentAccountId !== account.parentAccountId && newParentAccountId !== null) {
         try {            

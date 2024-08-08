@@ -60,8 +60,8 @@ export const bankAccounts = createTable(
     userId: uuid("user_id").references(() => users.id).notNull(),
     name: varchar("name", { length: 256 }).notNull(),
     bank: varchar("bank", { length: 256 }).notNull(),
-    clearingNr: integer("clearing_nr").notNull(),
-    accountNr: integer("account_nr").notNull(),
+    clearingNumber: integer("clearing_nr").notNull(),
+    accountNumber: integer("account_nr").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

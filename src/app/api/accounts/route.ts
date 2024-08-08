@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import * as schema from "~/server/db/schema";
 import { db } from "~/server/db";
 import { NextRequest, NextResponse } from "next/server";
+import { getSessionAndBody } from "~/server/utils";
 
 export async function GET(req: NextApiRequest) {
     let session = await getServerSession(authOptions);
@@ -17,12 +18,10 @@ export async function GET(req: NextApiRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    let session = await getServerSession(authOptions);
-    if (!session) {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    const { session, body, response } = await getSessionAndBody(req);
+    if (response) {
+        return response;
     }
-
-    const body = await req.json();
 
     if (!body.name) {
         return NextResponse.json({ message: "Missing name" }, { status: 400 });
