@@ -54,7 +54,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { operationa
         return patchParamsResponse;
     }
 
-    const { newBankAccountId, newOperationalYearId, newInitialValue } = values;
+    const { bankAccountId: newBankAccountId, operationalYearId: newOperationalYearId, initialValue: newInitialValue } = values;
 
     try {
         await db.update(schema.operationalYearBankAccountInitials).set({

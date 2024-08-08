@@ -54,7 +54,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { operationa
         return patchParamsResponse;
     }
 
-    const { newName, newStartDateString, newEndDateString } = values;
+    const { name: newName, startDate: newStartDateString, endDate: newEndDateString } = values;
 
     const newStartDate = new Date(newStartDateString);
     if (isNaN(newStartDate.getTime())) {

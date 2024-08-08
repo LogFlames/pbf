@@ -53,7 +53,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { accountId:
         return patchParamsResponse;
     }
 
-    const { newName, newParentAccountId } = values;
+    const { name: newName, parentAccountId: newParentAccountId } = values;
 
     if (newParentAccountId !== account.parentAccountId && newParentAccountId !== null) {
         try {            

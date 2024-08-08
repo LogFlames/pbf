@@ -13,8 +13,8 @@ export async function GET(req: NextApiRequest) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const accounts = await db.select().from(schema.accounts).where(eq(schema.accounts.userId, session.user.id)).execute();
-    return NextResponse.json(accounts);
+    const verifications = await db.select().from(schema.verifications).where(eq(schema.verifications.userId, session.user.id)).execute();
+    return NextResponse.json(verifications);
 }
 
 export async function POST(req: NextRequest) {
@@ -27,28 +27,38 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: "Missing name" }, { status: 400 });
     }
 
-    let parentAccountId = body.parentAccountId || null;
+    if (!body.date) {
+        return NextResponse.json({ message: "Missing date" }, { status: 400 });
+    }
+
+    const description = body.description || null;
 
     if (typeof body.name !== "string") {
         return NextResponse.json({ message: "Invalid name" }, { status: 400 });
     }
 
-    if (typeof parentAccountId !== "number" && parentAccountId !== null) {
-        return NextResponse.json({ message: "Invalid parentAccountId" }, { status: 400 });
+    let date = new Date(body.date);
+    if (isNaN(date.getTime())) {
+        return NextResponse.json({ message: "Invalid date" }, { status: 400 });
+    }
+
+    if (typeof description !== "string" && description !== null) {
+        return NextResponse.json({ message: "Invalid description" }, { status: 400 });
     }
 
     try {
-        const newAccount = await db.insert(schema.accounts).values({
+        const newverification = await db.insert(schema.verifications).values({
             userId: session.user.id,
             name: body.name,
-            parentAccountId: parentAccountId,
+            date: date,
+            description: description,
         }).returning();
 
-        return NextResponse.json(newAccount[0]);
+        return NextResponse.json(newverification[0]);
     } catch (error) {
         console.error(error);
         if (error instanceof Error && error.name === "PostgresError") {
-            return NextResponse.json({ message: "Database error, possible foreign key constraint" }, { status: 500 });
+            return NextResponse.json({ message: "Database error" }, { status: 500 });
         }
 
         return NextResponse.json({ message: "Unknown error" }, { status: 500 });

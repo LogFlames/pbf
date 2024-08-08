@@ -13,8 +13,8 @@ export async function GET(req: NextApiRequest) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const accounts = await db.select().from(schema.accounts).where(eq(schema.accounts.userId, session.user.id)).execute();
-    return NextResponse.json(accounts);
+    const verificationAttachments = await db.select().from(schema.verificationAttachments).where(eq(schema.verificationAttachments.userId, session.user.id)).execute();
+    return NextResponse.json(verificationAttachments);
 }
 
 export async function POST(req: NextRequest) {
@@ -23,28 +23,30 @@ export async function POST(req: NextRequest) {
         return response;
     }
 
-    if (!body.name) {
-        return NextResponse.json({ message: "Missing name" }, { status: 400 });
+    if (!body.verificationId) {
+        return NextResponse.json({ message: "Missing verificationId" }, { status: 400 });
     }
 
-    let parentAccountId = body.parentAccountId || null;
-
-    if (typeof body.name !== "string") {
-        return NextResponse.json({ message: "Invalid name" }, { status: 400 });
+    if (!body.filePath) {
+        return NextResponse.json({ message: "Missing filePath" }, { status: 400 }); 
     }
 
-    if (typeof parentAccountId !== "number" && parentAccountId !== null) {
-        return NextResponse.json({ message: "Invalid parentAccountId" }, { status: 400 });
+    if (typeof body.verificationId !== "number") {
+        return NextResponse.json({ message: "Invalid verificationId" }, { status: 400 });
+    }
+
+    if (typeof body.filePath !== "string") {
+        return NextResponse.json({ message: "Invalid filePath" }, { status: 400 });
     }
 
     try {
-        const newAccount = await db.insert(schema.accounts).values({
+        const newverificationAttachment = await db.insert(schema.verificationAttachments).values({
             userId: session.user.id,
-            name: body.name,
-            parentAccountId: parentAccountId,
+            verificationId: body.verificationId,
+            filePath: body.filePath,
         }).returning();
 
-        return NextResponse.json(newAccount[0]);
+        return NextResponse.json(newverificationAttachment[0]);
     } catch (error) {
         console.error(error);
         if (error instanceof Error && error.name === "PostgresError") {

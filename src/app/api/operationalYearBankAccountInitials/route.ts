@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         console.error(error);
         if (error instanceof Error && error.name === "PostgresError") {
-            return NextResponse.json({ message: "Database error" }, { status: 500 });
+            return NextResponse.json({ message: "Database error, possible foreign key constraint" }, { status: 500 });
         }
 
         return NextResponse.json({ message: "Unknown error" }, { status: 500 });
