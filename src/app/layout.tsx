@@ -1,10 +1,21 @@
 import "~/styles/globals.css";
+import { cn } from "~/lib/utils";
 
 import { type Metadata } from "next";
-import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
-import { cookies } from "next/headers";
+import { Inter as FontSans } from 'next/font/google'
+import { ThemeProvider } from "~/components/theme-provider";
+import { Combobox } from "~/components/combobox";
+
+import * as schema from "~/server/db/schema";
+import { eq, InferSelectModel } from "drizzle-orm";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/options";
+import { Nav, TopNav } from "~/components/navigation";
+
+const fontSans = FontSans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
 
 export const metadata: Metadata = {
   title: "PBF",
@@ -12,43 +23,23 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-async function TopNav() {
-  const csrfToken = cookies().get('next-auth.csrf-token')?.value.split('|')[0];
-  return (
-    <nav className="flex w-full justify-between items-center p-4 text-xl border-b">
-      <Link href="/">
-        PBF
-      </Link>
-      <Link href="/transactions">
-        Transactions
-      </Link>
-      <Link href="/verifications">
-        Verifications
-      </Link>
-      <Link href="/config">
-        Config
-      </Link>
-      <Link href="/dashboard">
-        Dashboard
-      </Link>
-      <form method="POST" action="/api/auth/signout">
-        <input type="hidden" name="csrfToken" value={csrfToken} />
-        <button type="submit">
-          <FontAwesomeIcon icon={faSignOutAlt} className="w-6 h-6" />
-        </button>
-      </form>
-    </nav>
-  );
-}
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="flex flex-col gap-4">
-        <TopNav />
-        {children}
+      <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <div className="grid md:min-h-screen w-full grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr]">
+            <div className="border-r bg-muted/40">
+              <Nav />
+            </div>
+            <div className="flex flex-col">
+              <TopNav />
+              {children}
+            </div>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

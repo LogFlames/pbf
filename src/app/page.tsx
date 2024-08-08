@@ -1,12 +1,16 @@
 import Link from "next/link";
+import { Button } from "~/components/ui/button";
 import { db } from "~/server/db";
 
 export default async function HomePage() {
   return (
-    <main className="">
-      <div className="flex justify-center">
-        Welcome to PBF!
+    <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+      <div className="flex items-center">
+        <h1 className="text-lg font-semibold md:text-2xl">Privat Bokföring</h1>
       </div>
-    </main>
+      <div>
+        Välkommen till Privat Bokföring!
+      </div>
+    </main >
   );
 }

@@ -3,11 +3,14 @@ import { db } from "~/server/db";
 
 export default async function TransactionsPage() {
   return (
-    <main className="">
-      <div className="flex justify-center">
-        Hello (app in progress)
-      </div>
-    </main>
+    <main className="flex flex-1 flex-col gap-4 p-4 gap-6 p-6">
+    <div className="flex items-center">
+      <h1 className="text-lg font-semibold md:text-2xl">Transactions</h1>
+    </div>
+    <div>
+      WIP
+    </div>
+  </main >
   );
 }
 

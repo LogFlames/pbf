@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (user && credentials.username === user.username && credentials.password === user.password) {
-            return { id: user.id, username: user.username };
+            return { id: user.id, username: user.username, firstname: user.firstname, lastname: user.lastname };
           }
 
           return null;
@@ -43,6 +43,8 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.username = user.username;
+        token.firstname = user.firstname;
+        token.lastname = user.lastname;
       }
       return token;
     },
@@ -53,6 +55,8 @@ export const authOptions: NextAuthOptions = {
           ...session.user,
           id: token.id,
           username: token.username,
+          firstname: token.firstname,
+          lastname: token.lastname,
         }
       }
     },

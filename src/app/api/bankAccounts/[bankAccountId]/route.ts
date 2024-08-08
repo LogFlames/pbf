@@ -47,8 +47,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { bankAccoun
     const { values, response: patchParamsResponse } = patchParams(body, [
         { name: "name", type: "string", defaultValue: bankAccount.name, allowNull: false },
         { name: "bank", type: "string", defaultValue: bankAccount.bank, allowNull: false },
-        { name: "clearingNumber", type: "number", defaultValue: bankAccount.clearingNumber, allowNull: false },
-        { name: "accountNumber", type: "number", defaultValue: bankAccount.accountNumber, allowNull: false },
+        { name: "clearingNumber", type: "string", defaultValue: bankAccount.clearingNumber, allowNull: false },
+        { name: "accountNumber", type: "string", defaultValue: bankAccount.accountNumber, allowNull: false },
     ]);
 
     if (patchParamsResponse) {
@@ -56,6 +56,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { bankAccoun
     }
 
     const { name: newName, bank: newBank, clearingNumber: newClearingNumber, accountNumber: newAccountNumber } = values;
+
+    if (newAccountNumber.match(/^[\d]+$/) === null) {
+        return NextResponse.json({ message: "Invalid accountNumber" }, { status: 400 });
+    }
+
+    if (newClearingNumber.match(/^[\d]{4}$/) === null) {
+        return NextResponse.json({ message: "Invalid clearingNumber" }, { status: 400 });
+    }
+
 
     try {
         await db.update(schema.bankAccounts).set({

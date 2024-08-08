@@ -28,6 +28,8 @@ export const users = createTable(
     id: uuid("id").primaryKey(),
     username: varchar("username", { length: 256 }).notNull(),
     password: varchar("password", { length: 256 }).notNull(),
+    firstname: varchar("firstname", { length: 256 }).notNull(),
+    lastname: varchar("lastname", { length: 256 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -60,8 +62,8 @@ export const bankAccounts = createTable(
     userId: uuid("user_id").references(() => users.id).notNull(),
     name: varchar("name", { length: 256 }).notNull(),
     bank: varchar("bank", { length: 256 }).notNull(),
-    clearingNumber: integer("clearing_nr").notNull(),
-    accountNumber: integer("account_nr").notNull(),
+    clearingNumber: varchar("clearing_nr", { length: 4 }).notNull(),
+    accountNumber: varchar("account_nr", { length: 32 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

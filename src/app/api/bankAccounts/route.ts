@@ -13,7 +13,7 @@ export async function GET(req: NextApiRequest) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const bankAccounts = await db.select().from(schema.bankAccounts).where(eq(schema.accounts.userId, session.user.id)).execute();
+    const bankAccounts = await db.select().from(schema.bankAccounts).where(eq(schema.bankAccounts.userId, session.user.id)).execute();
     return NextResponse.json(bankAccounts);
 }
 
@@ -47,11 +47,11 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: "Invalid bank" }, { status: 400 });
     }
 
-    if (typeof body.accountNumber !== "number") {
+    if (typeof body.accountNumber !== "string" || body.accountNumber.match(/^[\d]+$/) === null) {
         return NextResponse.json({ message: "Invalid accountNumber" }, { status: 400 });
     }
 
-    if (typeof body.clearingNumber !== "number") {
+    if (typeof body.clearingNumber !== "string" || body.clearingNumber.match(/^[\d]{4}$/) === null) {
         return NextResponse.json({ message: "Invalid clearingNumber" }, { status: 400 });
     }
 
