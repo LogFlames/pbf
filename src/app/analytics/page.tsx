@@ -1,4 +1,4 @@
-export default async function DashboardPage() {
+export default async function AnalyticsPage() {
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 gap-6 p-6">
       <div className="flex items-center">

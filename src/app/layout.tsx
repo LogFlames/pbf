@@ -11,6 +11,7 @@ import { eq, InferSelectModel } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/options";
 import { Nav, TopNav } from "~/components/navigation";
+import { db } from "~/server/db";
 
 const fontSans = FontSans({
   subsets: ['latin'],

@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: "Invalid operationalYearId" }, { status: 400 });
     }
 
-    if (typeof body.initialValue !== "number") {
+    if (typeof body.initialValue !== "string") {
         return NextResponse.json({ message: "Invalid initialValue" }, { status: 400 });
     }
 

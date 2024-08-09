@@ -1,13 +1,13 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { desc, sql } from "drizzle-orm";
 import {
   AnyPgColumn,
   index,
   integer,
   numeric,
   pgTableCreator,
+  primaryKey,
   serial,
   timestamp,
   uuid,
@@ -126,7 +126,6 @@ export const operationalYears = createTable(
 export const operationalYearAccountInitials = createTable(
   "operational_year_account_initial",
   {
-    id: serial("id").primaryKey(),
     userId: uuid("user_id").references(() => users.id).notNull(),
     accountId: integer("account_id").references(() => accounts.id).notNull(),
     operationalYearId: integer("operational_year_id").references(() => operationalYears.id).notNull(),
@@ -138,12 +137,15 @@ export const operationalYearAccountInitials = createTable(
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),
+  }, (table) => {
+    return {
+      pk: primaryKey({ columns: [table.userId, table.accountId, table.operationalYearId] })
+    };
   });
 
 export const operationalYearBankAccountInitials = createTable(
   "operational_year_bank_account_initial",
   {
-    id: serial("id").primaryKey(),
     userId: uuid("user_id").references(() => users.id).notNull(),
     bankAccountId: integer("bank_account_id").references(() => bankAccounts.id).notNull(),
     operationalYearId: integer("operational_year_id").references(() => operationalYears.id).notNull(),
@@ -155,6 +157,10 @@ export const operationalYearBankAccountInitials = createTable(
       .defaultNow()
       .$onUpdate(() => new Date())
       .notNull(),
+  }, (table) => {
+    return {
+      pk: primaryKey({ columns: [table.userId, table.bankAccountId, table.operationalYearId] })
+    };
   });
 
 export const transactions = createTable(

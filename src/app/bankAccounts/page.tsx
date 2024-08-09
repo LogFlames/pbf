@@ -16,6 +16,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "~/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
 import { Label } from "~/components/ui/label";
+import Loading from "~/components/loading";
 
 const newBankAccountFormSchema = z.object({
   name: z.string().min(1, "Name must be at least 1 character long").max(255, "Name cannot be more than 255 characters long"),
@@ -35,7 +36,10 @@ export default function BankAccountsPage() {
   const [editBankAccountPartialClearingNumber, setEditBankAccountPartialClearingNumber] = useState("");
   const [editBankAccountPartialAccountNumber, setEditBankAccountPartialAccountNumber] = useState("");
 
+  const [isLoading, setIsLoading] = useState(0);
+
   useEffect(() => {
+    setIsLoading(prevIsLoading => prevIsLoading + 1);
     fetch("/api/bankAccounts", { method: "GET" })
       .then(res => {
         if (res.status === 200) {
@@ -48,6 +52,8 @@ export default function BankAccountsPage() {
         setBankAccounts(data);
       }).catch(err => {
         console.error(err);
+      }).finally(() => {
+        setIsLoading(prevIsLoading => prevIsLoading - 1);
       });
   }, []);
 
@@ -62,6 +68,8 @@ export default function BankAccountsPage() {
   });
 
   function newBankAccountOnSubmit(data: z.infer<typeof newBankAccountFormSchema>) {
+    setNewBankAccountOpen(false);
+    newBankAccontForm.reset();
     fetch("/api/bankAccounts", {
       method: "POST",
       headers: {
@@ -127,7 +135,9 @@ export default function BankAccountsPage() {
       });
   }
 
-  console.log({ name: editBankAccountPartialName, bank: editBankAccountPartialBank, clearingNumber: editBankAccountPartialClearingNumber, accountNumber: editBankAccountPartialAccountNumber });
+  if (isLoading > 0) {
+    return (<Loading />);
+  }
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 gap-6 p-6">
@@ -141,6 +151,7 @@ export default function BankAccountsPage() {
             <PlusIcon className="h-6 w-6 bg-primary/60 text-primary hover:bg-primary/40 transition-all rounded-md ml-2" />
           </DialogTrigger>
           <DialogContent>
+            <DialogTitle>New Bank Account</DialogTitle>
             <Form {...newBankAccontForm}>
               <form onSubmit={newBankAccontForm.handleSubmit(newBankAccountOnSubmit)} className="space-y-4">
                 <FormField
@@ -207,7 +218,7 @@ export default function BankAccountsPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" onClick={() => setNewBankAccountOpen(false)}>Submit</Button>
+                <Button type="submit">Submit</Button>
               </form>
             </Form>
           </DialogContent>

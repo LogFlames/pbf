@@ -1,24 +1,25 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
+import { authOptions } from "../../../auth/[...nextauth]/options";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "~/server/db";
 import * as schema from "~/server/db/schema";
 import { and, eq } from "drizzle-orm";
 import { getSessionAndBody, patchParams } from "~/server/utils";
 
-export async function GET(req: NextRequest, { params }: { params: { operationalYearAccountInitialId: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { accountId: string, operationalYearId: string } }) {
     let session = await getServerSession(authOptions);
     if (!session) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const operationalYearAccountInitialId = parseInt(params.operationalYearAccountInitialId);
+    const accountId = parseInt(params.accountId);
+    const operationalYearId = parseInt(params.operationalYearId);
 
-    if (isNaN(operationalYearAccountInitialId)) {
-        return NextResponse.json({ message: "Invalid operationalYearAccountInitialId" }, { status: 400 });
+    if (isNaN(accountId) || isNaN(operationalYearId)) {
+        return NextResponse.json({ message: "Invalid accountId or operationalYearId" }, { status: 400 });	
     }
 
-    const operationalYearAccountInitial = await db.select().from(schema.operationalYearAccountInitials).where(and(eq(schema.operationalYearAccountInitials.userId, session.user.id), eq(schema.operationalYearAccountInitials.id, operationalYearAccountInitialId))).execute();
+    const operationalYearAccountInitial = await db.select().from(schema.operationalYearAccountInitials).where(and(eq(schema.operationalYearAccountInitials.userId, session.user.id), eq(schema.operationalYearAccountInitials.accountId, accountId), eq(schema.operationalYearAccountInitials.operationalYearId, operationalYearId))).execute();
     if (operationalYearAccountInitial.length === 0) {
         return NextResponse.json({ message: "Invalid operationalYearAccountInitialId" }, { status: 404 });
     }
@@ -26,19 +27,20 @@ export async function GET(req: NextRequest, { params }: { params: { operationalY
     return NextResponse.json(operationalYearAccountInitial[0]);
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { operationalYearAccountInitialId: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: { accountId: string, operationalYearId: string } }) {
     const { session, body, response: sessionAndBodyResponse } = await getSessionAndBody(req);
     if (sessionAndBodyResponse) {
         return sessionAndBodyResponse;
     } 
 
-    const operationalYearAccountInitialId = parseInt(params.operationalYearAccountInitialId);
+    const accountId = parseInt(params.accountId);
+    const operationalYearId = parseInt(params.operationalYearId);
 
-    if (isNaN(operationalYearAccountInitialId)) {
-        return NextResponse.json({ message: "Invalid operationalYearAccountInitialId" }, { status: 400 });
+    if (isNaN(accountId) || isNaN(operationalYearId)) {
+        return NextResponse.json({ message: "Invalid accountId or operationalYearId" }, { status: 400 });	
     }
 
-    const operationalYearAccountInitials = await db.select().from(schema.operationalYearAccountInitials).where(and(eq(schema.operationalYearAccountInitials.userId, session.user.id), eq(schema.operationalYearAccountInitials.id, operationalYearAccountInitialId))).execute();
+    const operationalYearAccountInitials = await db.select().from(schema.operationalYearAccountInitials).where(and(eq(schema.operationalYearAccountInitials.userId, session.user.id), eq(schema.operationalYearAccountInitials.accountId, accountId), eq(schema.operationalYearAccountInitials.operationalYearId, operationalYearId))).execute();
     if (operationalYearAccountInitials.length === 0 || operationalYearAccountInitials[0] === undefined) {
         return NextResponse.json({ message: "Invalid operationalYearAccountInitialId" }, { status: 404 });
     }
@@ -47,7 +49,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { operationa
     const { values, response: patchParamsResponse } = patchParams(body, [
         { name: "accountId", type: "number", defaultValue: operationalYearAccountInitial.accountId, allowNull: false },
         { name: "operationalYearId", type: "number", defaultValue: operationalYearAccountInitial.operationalYearId, allowNull: false },
-        { name: "initialValue", type: "number", defaultValue: operationalYearAccountInitial.initialValue, allowNull: false },
+        { name: "initialValue", type: "string", defaultValue: operationalYearAccountInitial.initialValue, allowNull: false },
     ]);
 
     if (patchParamsResponse) {
@@ -61,7 +63,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { operationa
             accountId: newAccountId,
             operationalYearId: newOperationalYearId,
             initialValue: newInitialValue,
-        }).where(eq(schema.operationalYearAccountInitials.id, operationalYearAccountInitialId)).execute();
+        }).where(and(eq(schema.operationalYearAccountInitials.userId, session.user.id), eq(schema.operationalYearAccountInitials.accountId, accountId), eq(schema.operationalYearAccountInitials.operationalYearId, operationalYearId))).execute();
     } catch (error) {
         console.error(error);
         if (error instanceof Error && error.name === "PostgresError") {
@@ -74,25 +76,26 @@ export async function PATCH(req: NextRequest, { params }: { params: { operationa
     return NextResponse.json({ message: "Success" }, { status: 200 });
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { operationalYearAccountInitialId: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { accountId: string, operationalYearId: string } }) {
     let session = await getServerSession(authOptions);
     if (!session) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const operationalYearAccountInitialId = parseInt(params.operationalYearAccountInitialId);
+    const accountId = parseInt(params.accountId);
+    const operationalYearId = parseInt(params.operationalYearId);
 
-    if (isNaN(operationalYearAccountInitialId)) {
-        return NextResponse.json({ message: "Invalid operationalYearAccountInitialId" }, { status: 400 });
+    if (isNaN(accountId) || isNaN(operationalYearId)) {
+        return NextResponse.json({ message: "Invalid accountId or operationalYearId" }, { status: 400 });	
     }
 
-    const operationalYearAccountInitials = await db.select().from(schema.operationalYearAccountInitials).where(and(eq(schema.operationalYearAccountInitials.userId, session.user.id), eq(schema.operationalYearAccountInitials.id, operationalYearAccountInitialId))).execute();
+    const operationalYearAccountInitials = await db.select().from(schema.operationalYearAccountInitials).where(and(eq(schema.operationalYearAccountInitials.userId, session.user.id), eq(schema.operationalYearAccountInitials.accountId, accountId), eq(schema.operationalYearAccountInitials.operationalYearId, operationalYearId))).execute();
     if (operationalYearAccountInitials.length === 0 || operationalYearAccountInitials[0] === undefined) {
         return NextResponse.json({ message: "Invalid operationalYearAccountInitialId" }, { status: 404 });
     }
 
     try {
-        await db.delete(schema.operationalYearAccountInitials).where(eq(schema.operationalYearAccountInitials.id, operationalYearAccountInitialId)).execute();
+        await db.delete(schema.operationalYearAccountInitials).where(and(eq(schema.operationalYearAccountInitials.userId, session.user.id), eq(schema.operationalYearAccountInitials.accountId, accountId), eq(schema.operationalYearAccountInitials.operationalYearId, operationalYearId))).execute();
     } catch (error) {
         console.error(error);
         if (error instanceof Error && error.name === "PostgresError") {
