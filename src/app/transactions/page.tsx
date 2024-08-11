@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { db } from "~/server/db";
 
 export default async function TransactionsPage() {
   return (
