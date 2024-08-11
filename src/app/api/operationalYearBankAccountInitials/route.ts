@@ -1,11 +1,11 @@
+import { eq } from "drizzle-orm";
 import { NextApiRequest } from "next";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/options";
-import { eq } from "drizzle-orm";
-import * as schema from "~/server/db/schema";
-import { db } from "~/server/db";
 import { NextRequest, NextResponse } from "next/server";
+import { db } from "~/server/db";
+import * as schema from "~/server/db/schema";
 import { getSessionAndBody } from "~/server/utils";
+import { authOptions } from "../auth/[...nextauth]/options";
 
 export async function GET(req: NextApiRequest) {
     let session = await getServerSession(authOptions);

@@ -1,10 +1,10 @@
+import { and, eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "~/server/db";
 import * as schema from "~/server/db/schema";
-import { and, eq } from "drizzle-orm";
 import { getSessionAndBody, patchParams } from "~/server/utils";
+import { authOptions } from "../../auth/[...nextauth]/options";
 
 export async function GET(req: NextRequest, { params }: { params: { verificationId: string } }) {
     let session = await getServerSession(authOptions);
