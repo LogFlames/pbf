@@ -159,7 +159,7 @@ export default function AccountsPage() {
 
     let rows: JSX.Element[] = [];
 
-    for (const item of Object.values(tree)) {
+    for (const item of Object.values(tree).sort((a, b) => a.name.localeCompare(b.name))) {
       rows.push(
         <TableRow
           key={item.id}
