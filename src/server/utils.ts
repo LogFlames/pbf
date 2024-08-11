@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
+import { getServerSession, Session } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "~/app/api/auth/[...nextauth]/options";
 import { db } from "./db";
 import * as schema from "./db/schema";
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession, Session } from "next-auth";
-import { authOptions } from "~/app/api/auth/[...nextauth]/options";
 
 export async function newAccountParentIdWouldResultInCyclic(userId: string, accountId: number, newAccountParentId: number): Promise<boolean> {
     const accounts = await db.select().from(schema.accounts).where(eq(schema.accounts.userId, userId)).execute();

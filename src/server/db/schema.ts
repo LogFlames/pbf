@@ -3,7 +3,6 @@
 
 import {
   AnyPgColumn,
-  index,
   integer,
   numeric,
   pgTableCreator,
@@ -11,7 +10,7 @@ import {
   serial,
   timestamp,
   uuid,
-  varchar,
+  varchar
 } from "drizzle-orm/pg-core";
 
 /**
