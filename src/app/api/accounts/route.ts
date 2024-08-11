@@ -27,10 +27,15 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: "Missing name" }, { status: 400 });
     }
 
+    let description = body.description || null;
     let parentAccountId = body.parentAccountId || null;
 
     if (typeof body.name !== "string") {
         return NextResponse.json({ message: "Invalid name" }, { status: 400 });
+    }
+
+    if (typeof description !== "string" && description !== null) {
+        return NextResponse.json({ message: "Invalid description" }, { status: 400 });
     }
 
     if (typeof parentAccountId !== "number" && parentAccountId !== null) {
@@ -41,6 +46,7 @@ export async function POST(req: NextRequest) {
         const newAccount = await db.insert(schema.accounts).values({
             userId: session.user.id,
             name: body.name,
+            description: description,
             parentAccountId: parentAccountId,
         }).returning();
 

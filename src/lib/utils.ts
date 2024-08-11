@@ -5,15 +5,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export type AccountWithChildren = { id: number, name: string, parentAccountId: number | null, children: AccountWithChildren[] };
+export type AccountWithChildren = { id: number, name: string, description: string | null, parentAccountId: number | null, children: AccountWithChildren[] };
 
-export function buildAccountMap(accounts: { id: number, name: string, parentAccountId: number | null }[]) {
+export function buildAccountMap(accounts: { id: number, name: string, description: string | null, parentAccountId: number | null }[]) {
   const map: { [key: number]: AccountWithChildren } = {};
 
   accounts.forEach(item => {
     map[item.id] = {
       id: item.id,
       name: item.name,
+      description: item.description,
       parentAccountId: item.parentAccountId,
       children: [],
     };
@@ -22,7 +23,7 @@ export function buildAccountMap(accounts: { id: number, name: string, parentAcco
   return map;
 }
 
-export function buildAccountTree(accounts: { id: number, name: string, parentAccountId: number | null }[]) {
+export function buildAccountTree(accounts: { id: number, name: string, description: string | null, parentAccountId: number | null }[]) {
   const map = buildAccountMap(accounts);
   const tree: { [key: number]: AccountWithChildren } = {};
 

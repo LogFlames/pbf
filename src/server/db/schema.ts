@@ -8,6 +8,7 @@ import {
   pgTableCreator,
   primaryKey,
   serial,
+  text,
   timestamp,
   uuid,
   varchar
@@ -44,6 +45,7 @@ export const accounts = createTable(
     id: serial("id").primaryKey(),
     userId: uuid("user_id").references(() => users.id).notNull(),
     name: varchar("name", { length: 256 }).notNull(),
+    description: text("description"),
     parentAccountId: integer("parent_account_id").references((): AnyPgColumn => accounts.id),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()

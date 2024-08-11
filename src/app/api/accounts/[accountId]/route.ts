@@ -46,6 +46,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { accountId:
 
     const { values, response: patchParamsResponse } = patchParams(body, [
         { name: "name", type: "string", defaultValue: account.name, allowNull: false },
+        { name: "description", type: "string", defaultValue: account.description, allowNull: true },
         { name: "parentAccountId", type: "number", defaultValue: account.parentAccountId, allowNull: true },
     ]);
 
@@ -53,7 +54,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { accountId:
         return patchParamsResponse;
     }
 
-    const { name: newName, parentAccountId: newParentAccountId } = values;
+    let { name: newName, description: newDescription, parentAccountId: newParentAccountId } = values;
+    newDescription = newDescription || null;
 
     if (newParentAccountId !== account.parentAccountId && newParentAccountId !== null) {
         try {            
@@ -73,6 +75,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { accountId:
     try {
         await db.update(schema.accounts).set({
             name: newName,
+            description: newDescription,
             parentAccountId: newParentAccountId,
         }).where(eq(schema.accounts.id, accountId)).execute();
     } catch (error) {

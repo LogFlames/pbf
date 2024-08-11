@@ -214,7 +214,7 @@ export default function operationalYearInitialBalancesPage() {
             <TableCell key={`before${item.id}-${i}`}>
             </TableCell>
           ))}
-          <TableCell>
+          <TableCell className="max-w-[50px]">
             {item.children.length > 0 &&
               <Button
                 variant="link"
@@ -443,8 +443,9 @@ export default function operationalYearInitialBalancesPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[80px]">Name</TableHead>
-                      {Array.from({ length: accountMaxDepth + 1 }, (_, i) => (
+                      <TableHead className=""></TableHead>
+                      <TableHead className="w-[50px]">Name</TableHead>
+                      {Array.from({ length: accountMaxDepth }, (_, i) => (
                         <TableHead className="" key={`header${i}`}></TableHead>
                       ))}
                       <TableHead className="w-full">Initial Balance</TableHead>

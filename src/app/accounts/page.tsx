@@ -16,11 +16,13 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
+import { Textarea } from "~/components/ui/textarea";
 import { AccountWithChildren, buildAccountTree, cn, findMaxDepth } from "~/lib/utils";
 import * as schema from "~/server/db/schema";
 
 const newAccountFormSchema = z.object({
   name: z.string().min(1, "Name must be at least 1 character long").max(255, "Name cannot be more than 255 characters long"),
+  description: z.string(),
   parentAccountId: z.string().nullable(),
 });
 
@@ -31,6 +33,7 @@ export default function AccountsPage() {
   const [newAccountOpen, setNewAccountOpen] = useState(false);
 
   const [editAccountPartialName, setEditAccountPartialName] = useState("");
+  const [editAccountPartialDescription, setEditAccountPartialDescription] = useState("");
   const [editAccountPartialParentAccountId, setEditAccountPartialParentAccountId] = useState("");
 
   const [hoveredRowAccountId, setHoveredRowAccountId] = useState<number | null>(null);
@@ -73,6 +76,7 @@ export default function AccountsPage() {
     resolver: zodResolver(newAccountFormSchema),
     defaultValues: {
       name: "",
+      description: "",
       parentAccountId: null,
     },
   });
@@ -170,7 +174,7 @@ export default function AccountsPage() {
             <TableCell key={`before${item.id}-${i}`}>
             </TableCell>
           ))}
-          <TableCell>
+          <TableCell className="max-w-[50px]">
             {item.children.length > 0 &&
               <Button
                 variant="link"
@@ -182,10 +186,16 @@ export default function AccountsPage() {
               </Button>
             }
           </TableCell>
-          <TableCell className="">
+          <TableCell className="max-w-[50px] whitespace-nowrap">
             {item.name}
+            <span className="text-muted-foreground ml-2">
+              {item.description ? `(${item.description})` : null}
+            </span>
           </TableCell>
-          <TableCell>
+          {Array.from({ length: accountMaxDepth - depth }, (_, i) => (
+            <TableCell className="" key={`after${item.id}-${i}`}></TableCell>
+          ))}
+          <TableCell className="text-right">
             <Button
               variant="link"
               className="p-0"
@@ -193,15 +203,13 @@ export default function AccountsPage() {
                 newAccontForm.setValue("parentAccountId", item.id.toString());
                 setNewAccountOpen(true);
               }}
+              title="Create Sub-Account"
             >
               <PlusIcon 
               className={cn("h-6 w-6 bg-primary/60 text-primary hover:bg-primary/40 transition-all rounded-md ml-2 transition-opacity duration-300", hoveredRowAccountId === item.id ? "opacity-100" : "opacity-0" )}
               size={30} />
             </Button>
           </TableCell>
-          {Array.from({ length: accountMaxDepth - depth }, (_, i) => (
-            <TableCell className="" key={`after${item.id}-${i}`}></TableCell>
-          ))}
           <TableCell className="font-medium text-right">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -277,6 +285,22 @@ export default function AccountsPage() {
                 />
                 <FormField
                   control={newAccontForm.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Account description" {...field} />
+                      </FormControl>
+                      <FormDescription hidden>
+                        Description for the account.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={newAccontForm.control}
                   name="parentAccountId"
                   render={({ field }) => (
                     <FormItem>
@@ -340,11 +364,13 @@ export default function AccountsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[80px]">Name</TableHead>
-                {Array.from({ length: accountMaxDepth + 2 }, (_, i) => (
-                  <TableHead className="" key={`header${i}`}></TableHead>
+                <TableHead className=""></TableHead>
+                <TableHead className="w-[50px]">Name</TableHead>
+                {Array.from({ length: accountMaxDepth }, (_, i) => (
+                  <TableHead className="" key={`header_after${i}`}></TableHead>
                 ))}
                 <TableHead className="w-full text-right"></TableHead>
+                <TableHead className="text-right"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -393,6 +419,16 @@ export default function AccountsPage() {
                         onChange={(e) => setEditAccountPartialName(e.target.value)}
                         className="col-span-3"
                       />
+                      <Label htmlFor="description" className="text-right">
+                        Description
+                      </Label>
+                      <Textarea
+                        id="description"
+                        placeholder="Account description"
+                        defaultValue={item.description ?? ""}
+                        onChange={(e) => setEditAccountPartialDescription(e.target.value)}
+                        className="col-span-3"
+                      />
                       <Label htmlFor="" className="text-right">
                         Parent Account
                       </Label>
@@ -425,6 +461,7 @@ export default function AccountsPage() {
                     <Button onClick={() => {
                       updateAccount(item.id, {
                         name: editAccountPartialName,
+                        description: editAccountPartialDescription,
                         parentAccountId: editAccountPartialParentAccountId,
                       });
                     }}>
