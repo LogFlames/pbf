@@ -1,15 +1,15 @@
 "use client";
 
 import { InferSelectModel } from "drizzle-orm";
-import { BadgeDollarSign, CalendarFold, GitCommitHorizontal, HandCoins, Home, Landmark, LineChart, LogOut, Menu, Package, Package2, ReceiptText, ShoppingCart, Users, Wrench } from "lucide-react";
-import Link from "next/link";
-import { Button } from "./ui/button";
-import { getCsrfToken, getSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { BadgeDollarSign, CalendarFold, GitCommitHorizontal, HandCoins, Landmark, LineChart, LogOut, ReceiptText } from "lucide-react";
 import { Session } from "next-auth";
+import { getCsrfToken, getSession } from "next-auth/react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { useEffect, useState } from "react";
 import * as schema from "~/server/db/schema";
+import { Button } from "./ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Separator } from "./ui/separator";
 
 export function TopNav() {
@@ -19,11 +19,12 @@ export function TopNav() {
     fetch("/api/operationalYears", {method: "GET"}).then(res => res.json()).then(data => {
       setOperationalYears(data);
     });
+
+    if (window.localStorage.getItem("operationalYear") === null && operationalYears.length > 0 && operationalYears[0] !== undefined) {
+      window.localStorage.setItem("operationalYear", operationalYears[0].id.toString());
+    }
   }, []);
 
-  if (window.localStorage.getItem("operationalYear") === null && operationalYears.length > 0 && operationalYears[0] !== undefined) {
-    window.localStorage.setItem("operationalYear", operationalYears[0].id.toString());
-  }
 
   return (
     <header className="sticky top-0 z-10 flex h-14 items-center border-b px-4 h-[60px] px-6">
