@@ -160,7 +160,7 @@ export default function BankAccountsPage() {
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Allkonto" {...field} />
+                        <Input placeholder="Bank account name" {...field} />
                       </FormControl>
                       <FormDescription hidden>
                         Name of the bank account.
@@ -176,7 +176,7 @@ export default function BankAccountsPage() {
                     <FormItem>
                       <FormLabel>Bank</FormLabel>
                       <FormControl>
-                        <Input placeholder="Handelsbanken" {...field} />
+                        <Input placeholder="Bank name" {...field} />
                       </FormControl>
                       <FormDescription hidden>
                         Name of the bank.
@@ -308,25 +308,21 @@ export default function BankAccountsPage() {
                       </Label>
                       <Input
                         id="name"
-                        placeholder="Allkonto"
+                        placeholder="Bank account name"
                         defaultValue={item.name}
                         onChange={(e) => setEditBankAccountPartialName(e.target.value)}
                         className="col-span-3"
                       />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="bank" className="text-right">
                         Bank
                       </Label>
                       <Input
                         id="bank"
-                        pattern="Handelsbanken"
+                        placeholder="Bank name"
                         defaultValue={item.bank}
                         onChange={(e) => setEditBankAccountPartialBank(e.target.value)}
                         className="col-span-3"
                       />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="clearingNumber" className="text-right">
                         Clearing Number
                       </Label>
@@ -338,8 +334,6 @@ export default function BankAccountsPage() {
                         onChange={(e) => setEditBankAccountPartialClearingNumber(e.target.value)}
                         className="col-span-3"
                       />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="accountNumber" className="text-right">
                         Account Number
                       </Label>

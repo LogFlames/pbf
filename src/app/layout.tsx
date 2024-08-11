@@ -25,7 +25,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <div className="grid md:min-h-screen w-full grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr]">
+          <div className="grid md:min-h-screen w-full grid-cols-1 md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
             <div className="border-r bg-muted/40">
               <Nav />
             </div>

@@ -176,7 +176,7 @@ export default function OperationalYearsPage() {
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="20xx" {...field} />
+                        <Input placeholder="Year name (yyyy)" {...field} />
                       </FormControl>
                       <FormDescription hidden>
                         Name of the operational year.
@@ -309,13 +309,11 @@ export default function OperationalYearsPage() {
                       </Label>
                       <Input
                         id="name"
-                        placeholder="20xx"
+                        placeholder="Year name (yyyy)"
                         defaultValue={item.name}
                         onChange={(e) => setEditOperationalYearPartialName(e.target.value)}
                         className="col-span-3"
                       />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="startDate" className="text-right">
                         Start Date
                       </Label>
@@ -326,8 +324,6 @@ export default function OperationalYearsPage() {
                         id="startDate"
                         className="col-span-3"
                       />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="endDate" className="text-right">
                         Start Date
                       </Label>
