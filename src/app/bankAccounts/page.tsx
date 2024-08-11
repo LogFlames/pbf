@@ -84,7 +84,7 @@ export default function BankAccountsPage() {
       throw new Error("Error creating bank account");
     })
       .then(data => {
-        setBankAccounts([...bankAccounts, data]);
+        setBankAccounts(prevBankAccounts => [...prevBankAccounts, data]);
       }).catch(err => {
         console.error(err);
       });
@@ -101,10 +101,10 @@ export default function BankAccountsPage() {
       }
 
       alert("Error deleting bank account, possible foreign key constraint violation");
-      throw new Error("Error deleting bank account");
+      throw new Error("Error deleting bank account, possible foreign key constraint violation");
     })
       .then(data => {
-        setBankAccounts(bankAccounts.filter(item => item.id !== id));
+        setBankAccounts(prevBankAccounts => prevBankAccounts.filter(item => item.id !== id));
       }).catch(err => {
         console.error(err);
       });
@@ -128,7 +128,7 @@ export default function BankAccountsPage() {
       throw new Error("Error updating bank account");
     })
       .then(data => {
-        setBankAccounts(bankAccounts.map(item => item.id === id ? { ...item, ...newData } : item));
+        setBankAccounts(prevBankAccounts => prevBankAccounts.map(item => item.id === id ? { ...item, ...newData } : item));
       }).catch(err => {
         console.error(err);
       });

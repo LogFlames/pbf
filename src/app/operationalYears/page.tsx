@@ -84,7 +84,7 @@ export default function OperationalYearsPage() {
       throw new Error("Error creating operational year");
     })
       .then(data => {
-        setOperationalYears([...operationalYears, { ...data, startDate: new Date(data.startDate), endDate: new Date(data.endDate)}]);
+        setOperationalYears(prevOperationalYears => [...prevOperationalYears, { ...data, startDate: new Date(data.startDate), endDate: new Date(data.endDate)}]);
       }).catch(err => {
         console.error(err);
       });
@@ -104,7 +104,7 @@ export default function OperationalYearsPage() {
       throw new Error("Error deleting operational year");
     })
       .then(data => {
-        setOperationalYears(operationalYears.filter(item => item.id !== id));
+        setOperationalYears(prevOperationalYears => prevOperationalYears.filter(item => item.id !== id));
       }).catch(err => {
         console.error(err);
       });
@@ -144,7 +144,7 @@ export default function OperationalYearsPage() {
           convertedData.endDate = new Date(newData.endDate);
         }
 
-        setOperationalYears(operationalYears.map(item => item.id === id ? { ...item, ...convertedData } : item));
+        setOperationalYears(prevOperationalYears => prevOperationalYears.map(item => item.id === id ? { ...item, ...convertedData } : item));
       }).catch(err => {
         console.error(err);
       });

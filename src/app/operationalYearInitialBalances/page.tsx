@@ -186,10 +186,10 @@ export default function operationalYearInitialBalancesPage() {
           throw new Error("Error saving initial account balance");
         })
           .then(data => {
-            setOperationalYearAccountInitials([...operationalYearAccountInitials, { ...data }]);
+            setOperationalYearAccountInitials(prevOperationalYearAccountInitials => [...prevOperationalYearAccountInitials, data ]);
           }).catch(err => {
             console.error(err);
-            anyFailed = true;
+            setIsAccountDirty(true);
           });
       } else {
         console.log(`Updating initial account balance for ${accountId}`);
@@ -210,21 +210,18 @@ export default function operationalYearInitialBalancesPage() {
           throw new Error("Error saving initial account balance");
         })
           .then(data => {
-            setOperationalYearAccountInitials(operationalYearAccountInitials.map(item => item.accountId === accountId && item.operationalYearId === currentOperationalYear ? { ...item, initialValue: value } : item));
+            setOperationalYearAccountInitials(prevOperationalYearAccountInitials => prevOperationalYearAccountInitials.map(item => item.accountId === accountId && item.operationalYearId === currentOperationalYear ? { ...item, initialValue: value } : item));
           }).catch(err => {
             console.error(err);
-            anyFailed = true;
+            setIsAccountDirty(true);
           });
       }
     }
 
-    if (!anyFailed) {
-      setIsDirty(false);
-    }
+    setIsAccountDirty(false);
   }
 
   function saveInitialBankAccountBalances() {
-    let anyFailed = false;
     for (const [bankAccountIdString, value] of Object.entries(operationalYearBankAccountInitialPartials)) {
       const bankAccountId = parseInt(bankAccountIdString);
       const item = bankAccounts.filter(item => item.id === bankAccountId)[0];
@@ -254,10 +251,10 @@ export default function operationalYearInitialBalancesPage() {
           throw new Error("Error saving initial bank account balance");
         })
           .then(data => {
-            setOperationalYearBankAccountInitials([...operationalYearBankAccountInitials, { ...data }]);
+            setOperationalYearBankAccountInitials(prevOperationalYearBankAccountInitials => [...prevOperationalYearBankAccountInitials, data ]);
           }).catch(err => {
             console.error(err);
-            anyFailed = true;
+            setIsBankAccountDirty(true);
           });
       } else {
         console.log(`Updating initial bank account balance for ${bankAccountId}`);
